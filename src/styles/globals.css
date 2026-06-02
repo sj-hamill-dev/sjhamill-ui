@@ -1,0 +1,86 @@
+/*
+ * Shared SJ Hamill brand palette + base layer.
+ *
+ * Import once from each consumer app's entry point:
+ *
+ *   // src/main.tsx
+ *   import "@sjhamill/ui/styles/globals.css";
+ *
+ * Consumers should NOT redeclare these CSS variables locally — that would
+ * silently fork the design system. If you need a one-off color tweak, do it
+ * with a Tailwind utility, not a variable override.
+ *
+ * Palette reference:
+ *   #0b2954 brand navy   |  #0f172a slate ink   |  #364151 slate gray
+ *   #dadada light gray   |  #d1dae5 cool gray   |  #ffffff white
+ *   #070614 deep ink     |  #222222 charcoal
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;          /* #ffffff */
+    --foreground: 0 0% 13%;           /* #222222 */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 13%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 13%;
+    --primary: 214 77% 19%;           /* #0b2954 brand navy */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 215 20% 86%;         /* #d1dae5 cool gray */
+    --secondary-foreground: 222 47% 11%;
+    --muted: 215 25% 95%;
+    --muted-foreground: 217 19% 27%;
+    --accent: 215 20% 86%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 142 71% 30%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 45%;
+    --warning-foreground: 0 0% 100%;
+    --border: 215 20% 86%;
+    --input: 215 20% 86%;
+    --ring: 214 77% 19%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 247 56% 5%;          /* #070614 */
+    --foreground: 0 0% 98%;
+    --card: 222 47% 11%;               /* #0f172a */
+    --card-foreground: 0 0% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 215 20% 86%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 217 19% 27%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 217 19% 27%;
+    --muted-foreground: 215 20% 70%;
+    --accent: 214 77% 19%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 45%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 142 71% 40%;
+    --success-foreground: 0 0% 98%;
+    --warning: 38 92% 55%;
+    --warning-foreground: 0 0% 13%;
+    --border: 217 19% 27%;
+    --input: 217 19% 27%;
+    --ring: 215 20% 86%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}

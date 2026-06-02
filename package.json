@@ -1,0 +1,41 @@
+{
+  "name": "@sjhamill/ui",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared design system + UI primitives for SJ Hamill internal frontends.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./tailwind-preset": "./tailwind-preset.js",
+    "./styles/globals.css": "./src/styles/globals.css",
+    "./lib/utils": "./src/lib/utils.ts"
+  },
+  "files": [
+    "src",
+    "tailwind-preset.js",
+    "README.md"
+  ],
+  "scripts": {
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.1.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.4",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "tailwindcss": ">=3.4"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "tailwindcss": "^3.4.13",
+    "typescript": "~5.6.2"
+  }
+}
