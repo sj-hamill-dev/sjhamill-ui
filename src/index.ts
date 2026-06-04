@@ -21,6 +21,8 @@ export {
 } from "./components/card";
 export { Badge, badgeVariants, type BadgeProps } from "./components/badge";
 export { Alert, AlertTitle, AlertDescription } from "./components/alert";
+export { KpiCard, type KpiCardProps } from "./components/kpi-card";
+export { StatusBadge, type StatusBadgeProps } from "./components/status-badge";
 
 // Utilities & formatters
 export {
