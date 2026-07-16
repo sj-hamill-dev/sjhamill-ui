@@ -46,6 +46,9 @@
     --input: 215 20% 86%;
     --ring: 214 77% 19%;
     --radius: 0.5rem;
+
+    --sidebar: 214 77% 19%;            /* brand navy */
+    --sidebar-foreground: 0 0% 100%;
   }
 
   .dark {
@@ -72,6 +75,9 @@
     --border: 217 19% 27%;
     --input: 217 19% 27%;
     --ring: 215 20% 86%;
+
+    --sidebar: 222 47% 11%;            /* slate ink */
+    --sidebar-foreground: 0 0% 98%;
   }
 }
 
