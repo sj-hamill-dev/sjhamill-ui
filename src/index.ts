@@ -23,6 +23,11 @@ export { Badge, badgeVariants, type BadgeProps } from "./components/badge";
 export { Alert, AlertTitle, AlertDescription } from "./components/alert";
 export { KpiCard, type KpiCardProps } from "./components/kpi-card";
 export { StatusBadge, type StatusBadgeProps } from "./components/status-badge";
+export { Logo, type LogoProps } from "./components/logo";
+export { DarkModeToggle, type DarkModeToggleProps } from "./components/dark-mode-toggle";
+
+// Hooks
+export { useDarkMode } from "./hooks/use-dark-mode";
 
 // Utilities & formatters
 export {
