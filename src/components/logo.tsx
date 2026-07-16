@@ -1,16 +1,26 @@
 import * as React from "react";
-import logoDark from "../assets/sj-hamill-logo.png";
-import logoWhite from "../assets/sjh-extended-logo-white.png";
 
 export interface LogoProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   dark?: boolean;
+  lightSrc?: string;
+  darkSrc?: string;
 }
 
 export const Logo = React.forwardRef<HTMLImageElement, LogoProps>(
-  ({ dark = false, className, alt = "SJ Hamill Construction", ...props }, ref) => (
+  (
+    {
+      dark = false,
+      lightSrc = "/sj-hamill-logo.png",
+      darkSrc = "/sjh-extended-logo-white.png",
+      className,
+      alt = "SJ Hamill Construction",
+      ...props
+    },
+    ref,
+  ) => (
     <img
       ref={ref}
-      src={dark ? logoWhite : logoDark}
+      src={dark ? darkSrc : lightSrc}
       alt={alt}
       className={className}
       {...props}
