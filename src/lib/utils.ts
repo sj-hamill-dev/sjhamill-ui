@@ -34,15 +34,10 @@ export function formatCurrency(value: number | null | undefined): string {
 }
 
 /**
- * Compact USD formatter for KPI tiles: $30.34M, $4.29K, $726.
- * Falls back to plain currency for values < $10K.
+ * @deprecated Use formatCurrency instead. Kept as an alias so existing
+ * call sites don't break — always returns the full dollar amount now.
  */
 export function formatCompactCurrency(value: number | null | undefined): string {
-  if (value == null) return "—";
-  const abs = Math.abs(value);
-  if (abs >= 1_000_000_000) return `$${(value / 1_000_000_000).toFixed(2)}B`;
-  if (abs >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`;
-  if (abs >= 10_000) return `$${(value / 1_000).toFixed(1)}K`;
   return formatCurrency(value);
 }
 
