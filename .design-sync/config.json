@@ -1,0 +1,30 @@
+{
+  "pkg": "@sjhamill/ui",
+  "globalName": "SjhamillUi",
+  "shape": "package",
+  "projectId": "f9da4448-b3c3-402b-be07-416f1be209ab",
+  "srcDir": "src",
+  "tsconfig": "tsconfig.json",
+  "cssEntry": ".ds-sync/compiled.css",
+  "readmeHeader": ".design-sync/conventions.md",
+  "buildCmd": "npx tailwindcss -c .ds-sync/tailwind.config.js -i src/styles/globals.css -o .ds-sync/compiled.css --minify",
+  "componentSrcMap": {
+    "useDarkMode": null,
+    "cn": null,
+    "formatCurrency": null,
+    "formatCompactCurrency": null,
+    "formatNumber": null,
+    "formatCompactNumber": null,
+    "formatPercent": null,
+    "formatDate": null,
+    "formatDateShort": null,
+    "formatRelativeTime": null,
+    "stripProjectPrefix": null,
+    "CHART_COLORS": null,
+    "TABLEAU_10": null,
+    "COST_TYPE_COLORS": null,
+    "STATUS_COLORS": null,
+    "buttonVariants": null,
+    "badgeVariants": null
+  }
+}
