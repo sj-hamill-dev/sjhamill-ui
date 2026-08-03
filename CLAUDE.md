@@ -30,7 +30,7 @@ The single source of truth for anything that should look identical across SJ Ham
 
 ```
 package.json                     @sjhamill/ui@0.1.0, private, type=module, main=./src/index.ts
-tailwind-preset.js               Load-bearing #1 — the shared Tailwind preset (all 3 consumers import this)
+tailwind-preset.js               Load-bearing #1 — the shared Tailwind preset (all 4 consumers import this)
 tsconfig.json
 src/
   index.ts                       Public export surface — every named export consumers can import
@@ -54,10 +54,10 @@ ds-bundle/                       (gitignored) 21-component IIFE bundle output fo
 
 | Surface | File | Consumed by | Breaking change =                       |
 |---|---|---|---|
-| Tailwind preset | `tailwind-preset.js` | procore-direct-costs-app, procore-direct-costs-embed-app, vendor-analytics-app | Every consumer's utility classes silently re-color. |
+| Tailwind preset | `tailwind-preset.js` | procore-direct-costs-app, procore-direct-costs-embed-app, procore-commitments-app, vendor-analytics-app | Every consumer's utility classes silently re-color. |
 | Brand CSS vars | `src/styles/globals.css` | procore-direct-costs-embed-app (direct import); everyone else transitively via the preset's `hsl(var(--*))` references | Renaming a `--*` token breaks every class name that resolves through it. |
-| Utility exports | `src/lib/utils.ts` | Any consumer that imports from `@sjhamill/ui` root | Renaming `cn`, `formatCurrency`, `TABLEAU_10`, `COST_TYPE_COLORS`, or `STATUS_COLORS` = API break. |
-| Components | `src/components/*.tsx` → `src/index.ts` | Currently zero consumer imports (2026-08-03); available for adoption | Safer to refactor today than the surfaces above, but check `grep -r "@sjhamill/ui" ../*-app/src` before renaming. |
+| Utility exports | `src/lib/utils.ts` | procore-commitments-app imports `cn`, `formatCurrency`, `formatDateShort`, `formatPercent` via `@sjhamill/ui/lib/utils` | Renaming `cn`, `formatCurrency`, `TABLEAU_10`, `COST_TYPE_COLORS`, or `STATUS_COLORS` = API break. |
+| Components | `src/components/*.tsx` → `src/index.ts` | procore-commitments-app imports `Button`, `Card`, `CardContent`, `CardHeader`, `CardTitle`, `Badge`, `KpiCard`, `Logo`, `DarkModeToggle`, `useDarkMode`. Other 3 apps: none yet. | Renaming any of the components above breaks commitments today. Check `grep -r "@sjhamill/ui" ../*-app/src` before renaming. |
 
 ---
 
@@ -67,9 +67,10 @@ ds-bundle/                       (gitignored) 21-component IIFE bundle output fo
 |---|---|---|---|
 | `procore-direct-costs-app` | `github:sj-hamill-dev/sjhamill-ui#main` | `@sjhamill/ui/tailwind-preset` | Yes — `.github/workflows/sync-sjhamill-ui.yml` (6h cron) |
 | `procore-direct-costs-embed-app` | `git+https://github.com/sj-hamill-dev/sjhamill-ui.git#main` | `@sjhamill/ui/tailwind-preset` + `@sjhamill/ui/styles/globals.css` | Yes — same 6h cron |
+| `procore-commitments-app` | `github:sj-hamill-dev/sjhamill-ui#main` | `@sjhamill/ui/tailwind-preset` + components (`Button`, `Card` family, `Badge`, `KpiCard`, `Logo`, `DarkModeToggle`) + hook (`useDarkMode`) + utils (`cn`, `formatCurrency`, `formatDateShort`, `formatPercent`) via `@sjhamill/ui/lib/utils` | Yes — same 6h cron |
 | `vendor-analytics-app` | `github:sj-hamill-dev/sjhamill-ui#main` | `@sjhamill/ui/tailwind-preset` | **No** — needs sync workflow (tracked as follow-up issue) |
 
-**Takeaway:** three apps currently depend on the **preset and the CSS vars**. Zero apps import a component. Prioritize the preset + globals for stability; treat components as available-but-not-load-bearing until a consumer adopts one.
+**Takeaway:** four apps depend on the preset. `procore-commitments-app` is the first (and currently only) real consumer of components + hooks + utilities — so renaming anything on the export surface breaks it. The other three apps only consume the preset (plus `globals.css` for the embed app). Any breaking change to a component/util/hook needs a grep across `procore-commitments-app/src` before merging.
 
 ---
 
@@ -111,7 +112,7 @@ Each consumer repo has a `.github/workflows/sync-sjhamill-ui.yml` on a 6h cron t
 
 ## Load-bearing invariants (things a fresh session would get wrong)
 
-1. **The tailwind preset is the primary product.** Not the components. Break a color token in `tailwind-preset.js` and every downstream Cloudflare Pages app silently re-colors within 6h.
+1. **The tailwind preset is the primary product for now.** Break a color token in `tailwind-preset.js` and every downstream Cloudflare Pages app silently re-colors within 6h. Components are secondary but no longer safe to casually rename — `procore-commitments-app` imports `Button`, `Card`, `Badge`, `KpiCard`, `Logo`, `DarkModeToggle` and the `useDarkMode` hook by name.
 2. **`src/styles/globals.css` defines the CSS-var contract for light + dark.** Renaming a `--*` token silently breaks every Tailwind class that references it. If you must rename, grep every consumer for `hsl(var(--old-name))` first.
 3. **Dark mode is `class="dark"` on a parent element** (usually `<html>`). It's NOT React context. Components read CSS custom properties, not props. The `useDarkMode` hook writes the class; components stay context-free.
 4. **`cn()` is the only sanctioned className composer** (`clsx` + `tailwind-merge`). Direct string concatenation loses `tailwind-merge`'s conflict resolution.
@@ -172,7 +173,7 @@ Runs on push + PR to `main`. Pre-commit mirrors the same checks locally.
 
 ## What NOT to touch without explicit ask
 
-- `tailwind-preset.js` color / radius tokens — breaks all 3 consumers instantly.
+- `tailwind-preset.js` color / radius tokens — breaks all 4 consumers instantly.
 - `src/styles/globals.css` `--*` token names — same blast radius.
 - `src/lib/utils.ts` exported names (`cn`, `formatCurrency`, `TABLEAU_10`, `COST_TYPE_COLORS`, `STATUS_COLORS`) — API break for anything on the export surface.
 - `ds-bundle/`, `.ds-sync/` — generated. Do not hand-edit.
