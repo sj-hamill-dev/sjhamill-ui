@@ -26,6 +26,31 @@ export { StatusBadge, type StatusBadgeProps } from "./components/status-badge";
 export { Logo, type LogoProps } from "./components/logo";
 export { DarkModeToggle, type DarkModeToggleProps } from "./components/dark-mode-toggle";
 
+// New shared primitives
+export {
+  AppShell,
+  SidebarNav,
+  type AppShellProps,
+  type SidebarNavProps,
+  type NavItem,
+} from "./components/app-shell";
+export { PageHeader, type PageHeaderProps } from "./components/page-header";
+export {
+  AlertBanner,
+  type AlertBannerProps,
+} from "./components/alert-banner";
+export {
+  DataTable,
+  type DataTableProps,
+  type DataTableColumn,
+  type DataTableFilterTab,
+} from "./components/data-table";
+export {
+  ChartLegend,
+  type ChartLegendProps,
+  type ChartLegendItem,
+} from "./components/chart-legend";
+
 // Hooks
 export { useDarkMode } from "./hooks/use-dark-mode";
 
