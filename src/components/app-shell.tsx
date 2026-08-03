@@ -73,6 +73,8 @@ export interface AppShellProps {
   sidebarFooter?: React.ReactNode;
   /** Whether the user's dark mode preference is active — controls the Logo variant. */
   dark?: boolean;
+  /** When set, renders a "← Back to Tools" link above the nav pointing to this URL. */
+  toolsHomeUrl?: string;
   /** Main page content. */
   children: React.ReactNode;
   className?: string;
@@ -88,6 +90,7 @@ export function AppShell({
   appName,
   navItems,
   sidebarFooter,
+  toolsHomeUrl,
   children,
   className,
 }: AppShellProps) {
@@ -104,6 +107,16 @@ export function AppShell({
             {appName}
           </span>
         </div>
+
+        {toolsHomeUrl && (
+          <a
+            href={toolsHomeUrl}
+            className="flex items-center gap-1.5 text-xs text-sidebar-foreground/60 transition-colors hover:text-sidebar-foreground"
+          >
+            <span aria-hidden>←</span>
+            <span>Back to Tools</span>
+          </a>
+        )}
 
         <SidebarNav items={navItems} />
 
