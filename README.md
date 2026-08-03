@@ -11,12 +11,12 @@ Non-Copilot agents: [`AGENTS.md`](AGENTS.md).
 
 | Layer | File | Used by (verified 2026-08-03) |
 | --- | --- | --- |
-| Tailwind preset | [`tailwind-preset.js`](tailwind-preset.js) | procore-direct-costs-app, procore-direct-costs-embed-app, vendor-analytics-app |
+| Tailwind preset | [`tailwind-preset.js`](tailwind-preset.js) | procore-direct-costs-app, procore-direct-costs-embed-app, procore-commitments-app, vendor-analytics-app |
 | Brand CSS variables (light + dark) | [`src/styles/globals.css`](src/styles/globals.css) | procore-direct-costs-embed-app |
-| React components (shadcn-style) | [`src/components/`](src/components/) | Available; no consumer imports yet |
-| Utilities & chart palettes | [`src/lib/utils.ts`](src/lib/utils.ts) | Available; no consumer imports yet |
+| React components (shadcn-style) | [`src/components/`](src/components/) | procore-commitments-app (`Button`, `Card`, `Badge`, `KpiCard`, `Logo`, `DarkModeToggle`) |
+| Utilities & chart palettes | [`src/lib/utils.ts`](src/lib/utils.ts) | procore-commitments-app (`cn`, `formatCurrency`, `formatDateShort`, `formatPercent`) |
 
-The two load-bearing surfaces today are the **Tailwind preset** and **`globals.css`**. Components are ready for adoption but not yet wired in.
+The load-bearing surfaces today are the **Tailwind preset** (all 4 apps), **`globals.css`** (embed app), and the **component + util export surface** (`procore-commitments-app`). Renaming any exported component or utility breaks commitments — grep it first.
 
 ---
 
