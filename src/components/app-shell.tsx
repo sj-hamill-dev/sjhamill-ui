@@ -1,6 +1,5 @@
 import * as React from "react";
 import { cn } from "../lib/utils";
-import { Logo } from "./logo";
 
 // ---------------------------------------------------------------------------
 // SidebarNav
@@ -89,7 +88,6 @@ export function AppShell({
   appName,
   navItems,
   sidebarFooter,
-  dark = false,
   children,
   className,
 }: AppShellProps) {
