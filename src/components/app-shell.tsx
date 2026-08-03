@@ -38,21 +38,19 @@ export function SidebarNav({ items, className }: SidebarNavProps) {
             "flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors",
             item.active
               ? "bg-white/[.14] font-semibold text-sidebar-foreground"
-              : "text-sidebar-foreground/70 hover:bg-white/[.08] hover:text-sidebar-foreground"
+              : "text-sidebar-foreground/70 hover:bg-white/[.08] hover:text-sidebar-foreground",
           )}
         >
           <span
             aria-hidden
             className={cn(
               "h-[7px] w-[7px] shrink-0 rounded-sm",
-              item.active ? "bg-sidebar-foreground" : "bg-sidebar-foreground/40"
+              item.active ? "bg-sidebar-foreground" : "bg-sidebar-foreground/40",
             )}
           />
           <span className="flex-1 truncate">{item.label}</span>
           {item.badge != null && (
-            <span className="shrink-0 text-xs text-sidebar-foreground/60">
-              {item.badge}
-            </span>
+            <span className="shrink-0 text-xs text-sidebar-foreground/60">{item.badge}</span>
           )}
         </a>
       ))}
@@ -103,9 +101,7 @@ export function AppShell({
           <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-md bg-secondary text-xs font-bold text-primary">
             SH
           </div>
-          <span className="text-sm font-bold text-sidebar-foreground">
-            {appName}
-          </span>
+          <span className="text-sm font-bold text-sidebar-foreground">{appName}</span>
         </div>
 
         {toolsHomeUrl && (
@@ -121,16 +117,12 @@ export function AppShell({
         <SidebarNav items={navItems} />
 
         {sidebarFooter && (
-          <div className="mt-auto text-xs text-sidebar-foreground/50">
-            {sidebarFooter}
-          </div>
+          <div className="mt-auto text-xs text-sidebar-foreground/50">{sidebarFooter}</div>
         )}
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto bg-background">
-        {children}
-      </main>
+      <main className="flex-1 overflow-y-auto bg-background">{children}</main>
     </div>
   );
 }

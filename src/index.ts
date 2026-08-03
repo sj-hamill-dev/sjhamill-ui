@@ -35,10 +35,7 @@ export {
   type NavItem,
 } from "./components/app-shell";
 export { PageHeader, type PageHeaderProps } from "./components/page-header";
-export {
-  AlertBanner,
-  type AlertBannerProps,
-} from "./components/alert-banner";
+export { AlertBanner, type AlertBannerProps } from "./components/alert-banner";
 export {
   DataTable,
   type DataTableProps,

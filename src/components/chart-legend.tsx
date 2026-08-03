@@ -28,14 +28,9 @@ export interface ChartLegendProps {
 export function ChartLegend({ items, title, className }: ChartLegendProps) {
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      {title && (
-        <p className="text-sm font-bold text-foreground">{title}</p>
-      )}
+      {title && <p className="text-sm font-bold text-foreground">{title}</p>}
       {items.map((item) => (
-        <div
-          key={item.label}
-          className="flex items-center justify-between gap-2"
-        >
+        <div key={item.label} className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span
               aria-hidden
@@ -45,9 +40,7 @@ export function ChartLegend({ items, title, className }: ChartLegendProps) {
             <span className="text-sm text-foreground">{item.label}</span>
           </div>
           {item.value != null && (
-            <span className="text-sm tabular-nums text-muted-foreground">
-              {item.value}
-            </span>
+            <span className="text-sm tabular-nums text-muted-foreground">{item.value}</span>
           )}
         </div>
       ))}

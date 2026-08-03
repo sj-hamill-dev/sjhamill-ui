@@ -40,10 +40,7 @@ export function KpiCard({
 }: KpiCardProps) {
   return (
     <div
-      className={cn(
-        "relative overflow-hidden rounded-lg border bg-card p-5 shadow-sm",
-        className
-      )}
+      className={cn("relative overflow-hidden rounded-lg border bg-card p-5 shadow-sm", className)}
     >
       {accentColor && (
         <span
@@ -61,15 +58,13 @@ export function KpiCard({
       <p
         className={cn(
           "mt-3 text-4xl font-semibold tracking-tight tabular-nums",
-          TONE_CLASSES[tone]
+          TONE_CLASSES[tone],
         )}
       >
         {loading ? <span className="text-muted-foreground">…</span> : value}
       </p>
       {hint != null && (
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          {loading ? " " : hint}
-        </p>
+        <p className="mt-1.5 text-sm text-muted-foreground">{loading ? " " : hint}</p>
       )}
     </div>
   );

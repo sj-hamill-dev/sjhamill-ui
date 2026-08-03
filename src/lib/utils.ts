@@ -54,10 +54,7 @@ export function formatCompactNumber(value: number | null | undefined): string {
   return formatNumber(value);
 }
 
-export function formatPercent(
-  value: number | null | undefined,
-  fractionDigits = 1
-): string {
+export function formatPercent(value: number | null | undefined, fractionDigits = 1): string {
   if (value == null || isNaN(value)) return "—";
   return `${(value * 100).toFixed(fractionDigits)}%`;
 }

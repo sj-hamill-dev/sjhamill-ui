@@ -30,7 +30,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps): React.Reac
         className={cn(
           "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-medium capitalize",
           tone,
-          className
+          className,
         )}
       >
         {status}
@@ -43,14 +43,10 @@ export function StatusBadge({ status, className }: StatusBadgeProps): React.Reac
     <span
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-sm font-medium capitalize text-muted-foreground ring-1 ring-border",
-        className
+        className,
       )}
     >
-      <span
-        aria-hidden
-        className="h-2 w-2 rounded-full"
-        style={{ backgroundColor: dotColor }}
-      />
+      <span aria-hidden className="h-2 w-2 rounded-full" style={{ backgroundColor: dotColor }} />
       {status}
     </span>
   );
