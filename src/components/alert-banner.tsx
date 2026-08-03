@@ -61,14 +61,11 @@ export function AlertBanner({
       className={cn(
         "flex items-center justify-between gap-3 rounded-lg border px-4 py-3",
         styles.wrapper,
-        className
+        className,
       )}
     >
       <div className="flex items-center gap-2.5">
-        <span
-          aria-hidden
-          className={cn("h-2 w-2 shrink-0 rounded-full", styles.dot)}
-        />
+        <span aria-hidden className={cn("h-2 w-2 shrink-0 rounded-full", styles.dot)} />
         <span className={cn("text-sm", styles.text)}>{children}</span>
       </div>
       {actionLabel && (

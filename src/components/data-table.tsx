@@ -134,12 +134,7 @@ export function DataTable<T>({
   const hasPrev = page > 1;
 
   return (
-    <div
-      className={cn(
-        "overflow-hidden rounded-lg border bg-card shadow-sm",
-        className
-      )}
-    >
+    <div className={cn("overflow-hidden rounded-lg border bg-card shadow-sm", className)}>
       {/* Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b px-5 py-3">
         <div className="flex items-center gap-3">
@@ -147,9 +142,7 @@ export function DataTable<T>({
             <div className="text-sm font-bold text-foreground">
               {title}
               {titleHint && (
-                <span className="ml-1.5 font-normal text-muted-foreground">
-                  {titleHint}
-                </span>
+                <span className="ml-1.5 font-normal text-muted-foreground">{titleHint}</span>
               )}
             </div>
           )}
@@ -163,13 +156,11 @@ export function DataTable<T>({
                     "rounded-[5px] px-2.5 py-1.5 text-xs font-semibold transition-colors",
                     activeFilter === tab.key
                       ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:text-foreground"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {tab.label}
-                  {tab.count != null && (
-                    <span className="ml-1 opacity-70">({tab.count})</span>
-                  )}
+                  {tab.count != null && <span className="ml-1 opacity-70">({tab.count})</span>}
                 </button>
               ))}
             </div>
@@ -202,15 +193,11 @@ export function DataTable<T>({
                   className={cn(
                     "border-b px-5 py-2.5 text-[10.5px] font-bold uppercase tracking-wider",
                     col.align === "right" ? "text-right" : "text-left",
-                    isSorted
-                      ? "border-b-2 border-primary text-primary"
-                      : "text-muted-foreground",
+                    isSorted ? "border-b-2 border-primary text-primary" : "text-muted-foreground",
                     col.sortable && "cursor-pointer select-none",
-                    col.width
+                    col.width,
                   )}
-                  onClick={
-                    col.sortable ? () => onSort?.(col.key) : undefined
-                  }
+                  onClick={col.sortable ? () => onSort?.(col.key) : undefined}
                 >
                   {col.header}
                   {arrow}
@@ -227,7 +214,7 @@ export function DataTable<T>({
                 "transition-colors",
                 i % 2 === 0 ? "bg-card" : "bg-muted/30",
                 onRowClick && "cursor-pointer hover:bg-accent/50",
-                rowClassName?.(row, i)
+                rowClassName?.(row, i),
               )}
               onClick={onRowClick ? () => onRowClick(row, i) : undefined}
             >
@@ -236,10 +223,8 @@ export function DataTable<T>({
                   key={col.key}
                   className={cn(
                     "border-b border-border/50 px-5 py-2.5",
-                    col.align === "right"
-                      ? "text-right tabular-nums"
-                      : "text-left",
-                    col.width
+                    col.align === "right" ? "text-right tabular-nums" : "text-left",
+                    col.width,
                   )}
                 >
                   {col.cell(row, i)}

@@ -1,71 +1,52 @@
 # @sjhamill/ui
 
-Shared design system and UI primitives for SJ Hamill internal frontends.
-Consumed by `procore-direct-costs-app`, `procore-direct-costs-embed-app`,
-and any future internal tools.
+Shared design system for SJ Hamill internal frontends.
 
-> Anything that should look identical across SJ Hamill apps belongs here.
-> App-specific UI (KPI cards keyed to direct-cost types, the View-As picker,
-> etc.) stays in each app's own `src/components/`.
+**Full dev source of truth: [`CLAUDE.md`](CLAUDE.md).**
+Non-Copilot agents: [`AGENTS.md`](AGENTS.md).
+
+---
+
+## What this actually ships
+
+| Layer | File | Used by (verified 2026-08-03) |
+| --- | --- | --- |
+| Tailwind preset | [`tailwind-preset.js`](tailwind-preset.js) | procore-direct-costs-app, procore-direct-costs-embed-app, vendor-analytics-app |
+| Brand CSS variables (light + dark) | [`src/styles/globals.css`](src/styles/globals.css) | procore-direct-costs-embed-app |
+| React components (shadcn-style) | [`src/components/`](src/components/) | Available; no consumer imports yet |
+| Utilities & chart palettes | [`src/lib/utils.ts`](src/lib/utils.ts) | Available; no consumer imports yet |
+
+The two load-bearing surfaces today are the **Tailwind preset** and **`globals.css`**. Components are ready for adoption but not yet wired in.
 
 ---
 
 ## Install in a consumer app
 
-This package is **not** published to npm. Consumers depend on it directly
-via a Git URL pinned to a branch or tag:
+Not published to npm. Consume directly via git URL:
 
 ```jsonc
-// package.json (consumer)
+// consumer package.json
 {
   "dependencies": {
-    "@sjhamill/ui": "git+https://github.com/sj-hamill-dev/sjhamill-ui.git#main"
+    "@sjhamill/ui": "github:sj-hamill-dev/sjhamill-ui#main"
   }
 }
 ```
 
-Then run `npm install`. To bump to the latest commit on `main`:
+Every consumer has a `.github/workflows/sync-sjhamill-ui.yml` (6h cron) that runs `npm update @sjhamill/ui` and opens a bump PR. Merging that PR triggers a Cloudflare Pages rebuild.
 
-```
-npm update @sjhamill/ui
-```
+> **Exception:** `vendor-analytics-app` does not have a sync workflow yet — tracked as a follow-up.
 
-For production builds, pin to a Git tag instead of `#main` so a midnight
-commit can't change what your next deploy ships:
+For production pins, use a git tag instead of `#main`:
 
 ```jsonc
-"@sjhamill/ui": "git+https://github.com/sj-hamill-dev/sjhamill-ui.git#v0.1.0"
+"@sjhamill/ui": "git+https://github.com/sj-hamill-dev/sjhamill-ui.git#v0.2.0"
 ```
 
----
-
-## What's included
-
-| Layer | What | Where |
-| --- | --- | --- |
-| Tailwind preset | Brand colors, border radius, animation plugin | `tailwind-preset.js` |
-| Global CSS | CSS variables for the brand palette (light + dark) | `src/styles/globals.css` |
-| Components | `Button`, `Card`, `Badge`, `Alert` (shadcn-style) | `src/components/` |
-| Utilities | `cn()`, currency/number/date formatters, chart palettes | `src/lib/utils.ts` |
-
----
-
-## Wire it up in a consumer app
-
-### 1. Install peer dependencies the consumer needs
-
-```
-npm i tailwindcss postcss autoprefixer
-```
-
-(The package's `dependencies` — `clsx`, `tailwind-merge`, `class-variance-authority`,
-`@radix-ui/react-slot`, `tailwindcss-animate` — install transitively. You
-don't need to add them to the consumer.)
-
-### 2. Tailwind config — extend the shared preset
+## Wire it up
 
 ```js
-// tailwind.config.js  (consumer app)
+// tailwind.config.js  (consumer)
 import sjhamillPreset from "@sjhamill/ui/tailwind-preset";
 
 export default {
@@ -73,109 +54,54 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{ts,tsx}",
-    // Scan the shared package so its component classes get included:
     "./node_modules/@sjhamill/ui/src/**/*.{ts,tsx}",
   ],
 };
 ```
 
-### 3. PostCSS config — standard Tailwind setup
-
-```js
-// postcss.config.js
-export default {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-};
-```
-
-### 4. Import the global stylesheet once
-
 ```tsx
 // src/main.tsx  (consumer)
 import "@sjhamill/ui/styles/globals.css";
-import { StrictMode } from "react";
-// ...
 ```
-
-### 5. Use the components and utilities
 
 ```tsx
-import { Card, CardHeader, CardTitle, CardContent, Button, cn, formatCurrency } from "@sjhamill/ui";
-
-export function ProjectCard({ name, total }: { name: string; total: number }) {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{name}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-semibold">{formatCurrency(total)}</div>
-        <Button variant="outline" size="sm" className={cn("mt-4")}>
-          View details
-        </Button>
-      </CardContent>
-    </Card>
-  );
-}
+// Anywhere in the consumer app
+import { Button, Card, cn, formatCurrency } from "@sjhamill/ui";
 ```
 
----
-
-## What does NOT belong here
-
-- **App-specific data shapes.** No interfaces tied to a specific Flask
-  endpoint or BigQuery table. Keep those in the consumer's `src/types/`.
-- **Anything that knows about Procore project numbers, direct cost types,
-  or other domain concepts.** Generic primitives only.
-- **Charts.** Recharts is heavy and the chart layouts are app-specific.
-  Each app keeps its own chart components; what they share is the color
-  palette (already exported from `lib/utils`).
-- **App layouts.** Each app's chrome (header, nav, footer) is different
-  and should live in the consumer.
-
-When in doubt: would this make sense in a hypothetical *third* SJ Hamill
-frontend that does something unrelated to Procore? If yes, it belongs
-here. If no, leave it in the consuming app.
+Full export surface: [`src/index.ts`](src/index.ts).
 
 ---
 
-## Updating the shared package
+## What belongs here vs. in a consumer
 
-Standard flow:
+**Belongs here:** anything that should look identical across every SJ Hamill frontend — brand palette, shared components, generic formatters, chart palettes.
 
-1. Make the change in a feature branch of this repo.
-2. PR + merge to `main`.
-3. In each consumer app, run `npm update @sjhamill/ui` and commit the
-   updated `package-lock.json`.
-4. Push the consumer change — Cloudflare Pages auto-rebuilds with the
-   new shared code.
+**Belongs in the consumer:** anything tied to a specific domain (Procore direct cost types, Riskcast projects, Dynamics stages) or a specific data shape (Flask endpoint responses, BigQuery table columns).
 
-For production:
-
-1. Tag the release: `git tag v0.2.0 && git push --tags`.
-2. Update consumers' `package.json` to pin the new tag.
-3. PR + merge in each consumer.
-
-### Optional: deploy-hook automation
-
-To skip the manual `npm update` step, configure a GitHub Action in this
-repo that fires Cloudflare Pages deploy hooks for each consumer when
-`main` updates. Each consumer's Pages project has a deploy-hook URL
-under **Settings → Builds & deployments → Deploy hooks**. The Action
-pulls those from repository secrets and `curl`s them on every push to
-`main`. Net effect: edit + push here, all consumers rebuild within
-~3 minutes.
+Test: would this make sense in a hypothetical third SJ Hamill frontend that does something unrelated to Procore? If yes → here. If no → consumer app.
 
 ---
 
-## Versioning
+## Local dev
 
-Keep `package.json` `version` in sync with Git tags. Pre-1.0 the API may
-change between minor versions; once we hit 1.0 we'll start treating
-breaking changes as a real bump.
+```powershell
+npm install
+npm run build          # typecheck (also what CI runs)
+npm run lint
+npm run format:check
+```
+
+No dev server — this repo has no runnable app. To see a component render, import it from a consumer app (fastest: procore-direct-costs-embed-app).
+
+## Contributing
+
+1. Branch from `main`.
+2. `npm run build && npm run lint && npm run format:check` all pass.
+3. Open PR — template will prompt you for consumer-impact analysis.
+4. **Every merge to `main` ships to all consumers within 6h.** Coordinate breaking changes before merging.
+
+Pre-commit hooks mirror CI: `pip install pre-commit && pre-commit install` runs typecheck + lint + prettier on every commit.
 
 ---
 

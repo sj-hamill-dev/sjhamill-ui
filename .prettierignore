@@ -1,0 +1,7 @@
+node_modules/
+package-lock.json
+ds-bundle/
+.ds-sync/
+.design-sync/
+.specstory/
+*.md

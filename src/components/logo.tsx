@@ -17,14 +17,6 @@ export const Logo = React.forwardRef<HTMLImageElement, LogoProps>(
       ...props
     },
     ref,
-  ) => (
-    <img
-      ref={ref}
-      src={dark ? darkSrc : lightSrc}
-      alt={alt}
-      className={className}
-      {...props}
-    />
-  ),
+  ) => <img ref={ref} src={dark ? darkSrc : lightSrc} alt={alt} className={className} {...props} />,
 );
 Logo.displayName = "Logo";
