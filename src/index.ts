@@ -32,6 +32,7 @@ export {
   SidebarNav,
   type AppShellProps,
   type SidebarNavProps,
+  type SidebarNavLinkProps,
   type NavItem,
 } from "./components/app-shell";
 export { PageHeader, type PageHeaderProps } from "./components/page-header";
