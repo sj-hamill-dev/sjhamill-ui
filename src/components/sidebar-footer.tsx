@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cn } from "../lib/utils";
+import { type SidebarNavLinkProps } from "./app-shell";
 import { DarkModeToggle } from "./dark-mode-toggle";
 
 export interface SidebarFooterProps {
@@ -8,9 +9,15 @@ export interface SidebarFooterProps {
   /** Route the Settings link points at. Default `/settings`. */
   settingsHref?: string;
   /**
+   * Override the anchor element used for the Settings link. Defaults to
+   * `<a href>`. Pass the same component you pass to `AppShell.linkComponent`
+   * so the footer participates in your SPA router (react-router `<Link>` etc.).
+   */
+  linkComponent?: React.ComponentType<SidebarNavLinkProps>;
+  /**
    * Intercept the Settings-link click (call `e.preventDefault()` then route
-   * yourself). Use for SPA routers. When omitted, the link behaves as a plain
-   * anchor.
+   * yourself). Kept as an escape hatch for consumers that don't use
+   * `linkComponent`. Ignored when `linkComponent` is provided.
    */
   onSettingsClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
   /** Whether dark mode is currently active — passed through to `DarkModeToggle`. */
@@ -21,6 +28,9 @@ export interface SidebarFooterProps {
   children?: React.ReactNode;
   className?: string;
 }
+
+const SETTINGS_LINK_CLASSES =
+  "flex items-center gap-2 rounded-md px-2 py-1.5 text-xs font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-foreground/10 hover:text-sidebar-foreground";
 
 /**
  * Opinionated sidebar footer: a Settings link, the `DarkModeToggle`, and the
@@ -33,28 +43,36 @@ export interface SidebarFooterProps {
 export function SidebarFooter({
   userEmail,
   settingsHref = "/settings",
+  linkComponent,
   onSettingsClick,
   dark,
   onToggleDark,
   children,
   className,
 }: SidebarFooterProps) {
+  const settingsChildren = (
+    <>
+      <SettingsIcon className="h-4 w-4" />
+      <span>Settings</span>
+    </>
+  );
+
+  const LinkComponent = linkComponent;
+
   return (
     <div className={cn("mt-auto flex flex-col gap-2 text-sidebar-foreground", className)}>
       {children}
 
       <div className="flex items-center justify-between gap-2 border-t border-sidebar-foreground/10 pt-3">
-        <a
-          href={settingsHref}
-          onClick={onSettingsClick}
-          className={cn(
-            "flex items-center gap-2 rounded-md px-2 py-1.5 text-xs font-medium text-sidebar-foreground/80 transition-colors",
-            "hover:bg-sidebar-foreground/10 hover:text-sidebar-foreground",
-          )}
-        >
-          <SettingsIcon className="h-4 w-4" />
-          <span>Settings</span>
-        </a>
+        {LinkComponent ? (
+          <LinkComponent href={settingsHref} className={SETTINGS_LINK_CLASSES}>
+            {settingsChildren}
+          </LinkComponent>
+        ) : (
+          <a href={settingsHref} onClick={onSettingsClick} className={SETTINGS_LINK_CLASSES}>
+            {settingsChildren}
+          </a>
+        )}
         <DarkModeToggle
           dark={dark}
           onToggle={onToggleDark}
