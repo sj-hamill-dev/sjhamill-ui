@@ -92,8 +92,10 @@ function DefaultLink({ href, className, children }: SidebarNavLinkProps) {
 // AppShell
 // ---------------------------------------------------------------------------
 
+export const DEFAULT_TOOLS_HOME_URL = "https://tools.sjhamillconstruction.com";
+
 export interface AppShellProps {
-  /** Application name shown next to the logo in the sidebar header. */
+  /** Application name shown below the logo in the sidebar header. */
   appName: string;
   /** Navigation items rendered in the sidebar. */
   navItems: NavItem[];
@@ -101,10 +103,19 @@ export interface AppShellProps {
   sidebarFooter?: React.ReactNode;
   /** Whether the user's dark mode preference is active — controls the Logo variant. */
   dark?: boolean;
-  /** When set, renders a "← Back to Tools" link above the nav pointing to this URL. */
-  toolsHomeUrl?: string;
+  /**
+   * Renders a "← Back to Tools" link above the nav pointing to this URL.
+   * Defaults to `https://tools.sjhamillconstruction.com`. Pass `false` to
+   * suppress the link entirely.
+   */
+  toolsHomeUrl?: string | false;
   /** Override the anchor element used for nav items. Defaults to `<a href>`. */
   linkComponent?: React.ComponentType<SidebarNavLinkProps>;
+  /**
+   * Custom logo rendered above the app name in the sidebar header. When
+   * omitted, a default "SH" monogram renders as a fallback.
+   */
+  logo?: React.ReactNode;
   /** Main page content. */
   children: React.ReactNode;
   className?: string;
@@ -121,7 +132,8 @@ export function AppShell({
   navItems,
   linkComponent,
   sidebarFooter,
-  toolsHomeUrl,
+  toolsHomeUrl = DEFAULT_TOOLS_HOME_URL,
+  logo,
   children,
   className,
 }: AppShellProps) {
@@ -130,10 +142,12 @@ export function AppShell({
       {/* Sidebar */}
       <aside className="flex w-[220px] shrink-0 flex-col gap-5 bg-sidebar p-5 text-sidebar-foreground">
         {/* Logo + app name */}
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-md bg-secondary text-xs font-bold text-primary">
-            SH
-          </div>
+        <div className="flex flex-col gap-2">
+          {logo ?? (
+            <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-md bg-secondary text-xs font-bold text-primary">
+              SH
+            </div>
+          )}
           <span className="text-sm font-bold text-sidebar-foreground">{appName}</span>
         </div>
 
