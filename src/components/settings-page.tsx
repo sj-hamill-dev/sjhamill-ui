@@ -242,7 +242,13 @@ const DEFAULT_CREDIT = (
   </>
 );
 
-export function AboutCard({ appName, version, credit = DEFAULT_CREDIT, links, className }: AboutCardProps) {
+export function AboutCard({
+  appName,
+  version,
+  credit = DEFAULT_CREDIT,
+  links,
+  className,
+}: AboutCardProps) {
   return (
     <div
       className={cn(

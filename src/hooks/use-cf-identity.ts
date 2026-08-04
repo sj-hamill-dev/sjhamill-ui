@@ -39,7 +39,9 @@ export function useCfIdentity(): CfIdentity | null {
       .catch(() => {
         if (!cancelled) setIdentity({ email: "unknown", initials: "??" });
       });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return identity;

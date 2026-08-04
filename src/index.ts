@@ -79,7 +79,11 @@ export {
   type AboutCardProps,
   type AboutLink,
 } from "./components/settings-page";
-export { SidebarFooter, DEFAULT_SIGN_OUT_URL, type SidebarFooterProps } from "./components/sidebar-footer";
+export {
+  SidebarFooter,
+  DEFAULT_SIGN_OUT_URL,
+  type SidebarFooterProps,
+} from "./components/sidebar-footer";
 export { PageFooter, type PageFooterProps } from "./components/page-footer";
 
 // View-As defaults
