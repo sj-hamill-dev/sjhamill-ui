@@ -182,6 +182,12 @@ Runs on push + PR to `main`. Pre-commit mirrors the same checks locally.
 
 ---
 
+## Consumer adoption
+
+New consumer adopting the shared shell (`AppShell` + `SidebarFooter` + `SettingsPage`)? Follow [`ADOPTION.md`](ADOPTION.md) — a copy-pasteable checklist that reviewers can tick box-by-box. It ships in the git dep (`files` in package.json), so consumers can also read it from their `node_modules/@sjhamill/ui/ADOPTION.md`.
+
+---
+
 ## Issue filing
 
 Use the two-step pattern per `sjhamill-archives/agent-context/AGENT_ISSUE_FILING.md`. This repo does **NOT** have auto-add enabled, so both steps are required:
