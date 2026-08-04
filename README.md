@@ -3,6 +3,7 @@
 Shared design system for SJ Hamill internal frontends.
 
 **Full dev source of truth: [`CLAUDE.md`](CLAUDE.md).**
+Adopting the shell in a consumer app: [`ADOPTION.md`](ADOPTION.md).
 Non-Copilot agents: [`AGENTS.md`](AGENTS.md).
 
 ---

@@ -15,7 +15,8 @@
   "files": [
     "src",
     "tailwind-preset.js",
-    "README.md"
+    "README.md",
+    "ADOPTION.md"
   ],
   "scripts": {
     "build": "tsc --noEmit",
