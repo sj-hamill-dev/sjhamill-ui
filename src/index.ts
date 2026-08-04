@@ -49,6 +49,37 @@ export {
   type ChartLegendItem,
 } from "./components/chart-legend";
 
+// Settings shell + sidebar footer (2026-08-04)
+export { Avatar, type AvatarProps, type AvatarSize } from "./components/avatar";
+export { RoleBadge, type RoleBadgeProps, type Role } from "./components/role-badge";
+export { AccountCard, type AccountCardProps } from "./components/account-card";
+export {
+  ViewAsPicker,
+  type ViewAsPickerProps,
+  type ViewAsTarget,
+} from "./components/view-as-picker";
+export { ViewAsBanner, type ViewAsBannerProps } from "./components/view-as-banner";
+export {
+  TeamRolesTable,
+  type TeamRolesTableProps,
+  type TeamMember,
+} from "./components/team-roles-table";
+export {
+  SettingsPage,
+  SettingsSection,
+  SettingsToggle,
+  SettingsSelectRow,
+  AboutCard,
+  type SettingsPageProps,
+  type SettingsSectionProps,
+  type SettingsToggleProps,
+  type SettingsSelectRowProps,
+  type SettingsSelectOption,
+  type AboutCardProps,
+  type AboutLink,
+} from "./components/settings-page";
+export { SidebarFooter, type SidebarFooterProps } from "./components/sidebar-footer";
+
 // Hooks
 export { useDarkMode } from "./hooks/use-dark-mode";
 
