@@ -234,7 +234,15 @@ export interface AboutCardProps {
  * Settings page. Renders as a bordered card so it can sit outside a
  * `SettingsSection`, or drop it inside one with `bodyFlush` for a nested look.
  */
-export function AboutCard({ appName, version, credit, links, className }: AboutCardProps) {
+const DEFAULT_CREDIT = (
+  <>
+    SJ Hamill Construction
+    <br />
+    Built by Valery Briceno Velez.
+  </>
+);
+
+export function AboutCard({ appName, version, credit = DEFAULT_CREDIT, links, className }: AboutCardProps) {
   return (
     <div
       className={cn(

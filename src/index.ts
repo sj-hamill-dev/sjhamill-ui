@@ -30,6 +30,7 @@ export { DarkModeToggle, type DarkModeToggleProps } from "./components/dark-mode
 export {
   AppShell,
   SidebarNav,
+  DEFAULT_TOOLS_HOME_URL,
   type AppShellProps,
   type SidebarNavProps,
   type SidebarNavLinkProps,
@@ -80,8 +81,12 @@ export {
 } from "./components/settings-page";
 export { SidebarFooter, type SidebarFooterProps } from "./components/sidebar-footer";
 
+// View-As defaults
+export { DEFAULT_VIEW_AS_TARGETS } from "./lib/view-as-defaults";
+
 // Hooks
 export { useDarkMode } from "./hooks/use-dark-mode";
+export { useCfIdentity, type CfIdentity } from "./hooks/use-cf-identity";
 
 // Utilities & formatters
 export {
