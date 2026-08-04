@@ -3,6 +3,8 @@ import { cn } from "../lib/utils";
 import { type SidebarNavLinkProps } from "./app-shell";
 import { DarkModeToggle } from "./dark-mode-toggle";
 
+export const DEFAULT_SIGN_OUT_URL = "/cdn-cgi/access/logout";
+
 export interface SidebarFooterProps {
   /** Email of the signed-in user. Rendered at the bottom, truncated to fit. */
   userEmail: string;
@@ -20,6 +22,11 @@ export interface SidebarFooterProps {
    * `linkComponent`. Ignored when `linkComponent` is provided.
    */
   onSettingsClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
+  /**
+   * URL for the sign-out link. Defaults to `/cdn-cgi/access/logout`
+   * (Cloudflare Access). Pass `false` to hide the sign-out link.
+   */
+  signOutUrl?: string | false;
   /** Whether dark mode is currently active — passed through to `DarkModeToggle`. */
   dark: boolean;
   /** Called when the dark-mode toggle is clicked. */
@@ -45,6 +52,7 @@ export function SidebarFooter({
   settingsHref = "/settings",
   linkComponent,
   onSettingsClick,
+  signOutUrl = DEFAULT_SIGN_OUT_URL,
   dark,
   onToggleDark,
   children,
@@ -63,7 +71,7 @@ export function SidebarFooter({
     <div className={cn("mt-auto flex flex-col gap-2 text-sidebar-foreground", className)}>
       {children}
 
-      <div className="flex items-center justify-between gap-2 border-t border-sidebar-foreground/10 pt-3">
+      <div className="flex items-center gap-2 border-t border-sidebar-foreground/10 pt-3">
         {LinkComponent ? (
           <LinkComponent href={settingsHref} className={SETTINGS_LINK_CLASSES}>
             {settingsChildren}
@@ -73,17 +81,46 @@ export function SidebarFooter({
             {settingsChildren}
           </a>
         )}
-        <DarkModeToggle
-          dark={dark}
-          onToggle={onToggleDark}
-          className="text-sidebar-foreground/60 hover:bg-sidebar-foreground/10 hover:text-sidebar-foreground"
-        />
+        <div className="ml-auto flex items-center gap-1">
+          {signOutUrl && (
+            <a
+              href={signOutUrl}
+              className="flex items-center rounded-md p-1.5 text-sidebar-foreground/60 transition-colors hover:bg-sidebar-foreground/10 hover:text-sidebar-foreground"
+              title="Sign out"
+            >
+              <SignOutIcon className="h-4 w-4" />
+            </a>
+          )}
+          <DarkModeToggle
+            dark={dark}
+            onToggle={onToggleDark}
+            className="text-sidebar-foreground/60 hover:bg-sidebar-foreground/10 hover:text-sidebar-foreground"
+          />
+        </div>
       </div>
 
       <div className="truncate text-[11px] text-sidebar-foreground/50" title={userEmail}>
         {userEmail}
       </div>
     </div>
+  );
+}
+
+function SignOutIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      className={className}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3-3h-12m9-3 3 3-3 3"
+      />
+    </svg>
   );
 }
 
