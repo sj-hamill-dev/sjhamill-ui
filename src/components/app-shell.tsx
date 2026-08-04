@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cn } from "../lib/utils";
+import { Logo } from "./logo";
 
 // ---------------------------------------------------------------------------
 // SidebarNav
@@ -113,7 +114,7 @@ export interface AppShellProps {
   linkComponent?: React.ComponentType<SidebarNavLinkProps>;
   /**
    * Custom logo rendered above the app name in the sidebar header. When
-   * omitted, a default "SH" monogram renders as a fallback.
+   * omitted, the SJ Hamill logo renders (white variant for the dark sidebar).
    */
   logo?: React.ReactNode;
   /** Main page content. */
@@ -143,11 +144,7 @@ export function AppShell({
       <aside className="flex w-[220px] shrink-0 flex-col gap-5 bg-sidebar p-5 text-sidebar-foreground">
         {/* Logo + app name */}
         <div className="flex flex-col gap-2">
-          {logo ?? (
-            <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-md bg-secondary text-xs font-bold text-primary">
-              SH
-            </div>
-          )}
+          {logo ?? <Logo dark className="h-[30px] w-auto" />}
           <span className="text-sm font-bold text-sidebar-foreground">{appName}</span>
         </div>
 

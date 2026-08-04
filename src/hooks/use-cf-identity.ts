@@ -30,7 +30,7 @@ export function useCfIdentity(): CfIdentity | null {
         if (!res.ok) throw new Error(`${res.status}`);
         return res.json();
       })
-      .then((data) => {
+      .then((data: { email?: string; name?: string }) => {
         if (!cancelled) {
           const email: string = data.email ?? "unknown";
           setIdentity({ email, name: data.name, initials: initialsFrom(email) });
