@@ -12,11 +12,26 @@ export interface NavItem {
   active?: boolean;
   /** Optional badge (e.g. count) rendered to the right of the label. */
   badge?: React.ReactNode;
+  /** Optional icon rendered to the left of the label. */
+  icon?: React.ReactNode;
+}
+
+/**
+ * Shape of the link component consumers can pass to render nav items with
+ * their router of choice (e.g. react-router `Link`). Default is `<a>`, which
+ * triggers a full page reload — pass this for SPA-style client-side routing.
+ */
+export interface SidebarNavLinkProps {
+  href: string;
+  className?: string;
+  children: React.ReactNode;
 }
 
 export interface SidebarNavProps {
   items: NavItem[];
   className?: string;
+  /** Override the anchor element used for each item. Defaults to `<a href>`. */
+  linkComponent?: React.ComponentType<SidebarNavLinkProps>;
 }
 
 /**
@@ -27,11 +42,12 @@ export interface SidebarNavProps {
  * Construction users don't memorise icon-only rails, so every item is a
  * readable label. Keep the list short (4–6 items).
  */
-export function SidebarNav({ items, className }: SidebarNavProps) {
+export function SidebarNav({ items, className, linkComponent }: SidebarNavProps) {
+  const LinkComponent = linkComponent ?? DefaultLink;
   return (
     <nav className={cn("flex flex-col gap-0.5", className)}>
       {items.map((item) => (
-        <a
+        <LinkComponent
           key={item.href}
           href={item.href}
           className={cn(
@@ -41,20 +57,34 @@ export function SidebarNav({ items, className }: SidebarNavProps) {
               : "text-sidebar-foreground/70 hover:bg-white/[.08] hover:text-sidebar-foreground",
           )}
         >
-          <span
-            aria-hidden
-            className={cn(
-              "h-[7px] w-[7px] shrink-0 rounded-sm",
-              item.active ? "bg-sidebar-foreground" : "bg-sidebar-foreground/40",
-            )}
-          />
+          {item.icon != null ? (
+            <span aria-hidden className="flex h-4 w-4 shrink-0 items-center justify-center">
+              {item.icon}
+            </span>
+          ) : (
+            <span
+              aria-hidden
+              className={cn(
+                "h-[7px] w-[7px] shrink-0 rounded-sm",
+                item.active ? "bg-sidebar-foreground" : "bg-sidebar-foreground/40",
+              )}
+            />
+          )}
           <span className="flex-1 truncate">{item.label}</span>
           {item.badge != null && (
             <span className="shrink-0 text-xs text-sidebar-foreground/60">{item.badge}</span>
           )}
-        </a>
+        </LinkComponent>
       ))}
     </nav>
+  );
+}
+
+function DefaultLink({ href, className, children }: SidebarNavLinkProps) {
+  return (
+    <a href={href} className={className}>
+      {children}
+    </a>
   );
 }
 
@@ -73,6 +103,8 @@ export interface AppShellProps {
   dark?: boolean;
   /** When set, renders a "← Back to Tools" link above the nav pointing to this URL. */
   toolsHomeUrl?: string;
+  /** Override the anchor element used for nav items. Defaults to `<a href>`. */
+  linkComponent?: React.ComponentType<SidebarNavLinkProps>;
   /** Main page content. */
   children: React.ReactNode;
   className?: string;
@@ -87,6 +119,7 @@ export interface AppShellProps {
 export function AppShell({
   appName,
   navItems,
+  linkComponent,
   sidebarFooter,
   toolsHomeUrl,
   children,
@@ -114,7 +147,7 @@ export function AppShell({
           </a>
         )}
 
-        <SidebarNav items={navItems} />
+        <SidebarNav items={navItems} linkComponent={linkComponent} />
 
         {sidebarFooter && (
           <div className="mt-auto text-xs text-sidebar-foreground/50">{sidebarFooter}</div>
