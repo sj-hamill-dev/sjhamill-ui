@@ -27,6 +27,12 @@ export interface SidebarFooterProps {
    * (Cloudflare Access). Pass `false` to hide the sign-out link.
    */
   signOutUrl?: string | false;
+  /**
+   * Called when the sign-out link is clicked, before navigation. Useful for
+   * consumers that need to clear local state (e.g. a "view as" selection)
+   * on the way out. Does not prevent navigation.
+   */
+  onSignOutClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
   /** Whether dark mode is currently active — passed through to `DarkModeToggle`. */
   dark: boolean;
   /** Called when the dark-mode toggle is clicked. */
@@ -53,6 +59,7 @@ export function SidebarFooter({
   linkComponent,
   onSettingsClick,
   signOutUrl = DEFAULT_SIGN_OUT_URL,
+  onSignOutClick,
   dark,
   onToggleDark,
   children,
@@ -85,6 +92,7 @@ export function SidebarFooter({
           {signOutUrl && (
             <a
               href={signOutUrl}
+              onClick={onSignOutClick}
               className="flex items-center rounded-md p-1.5 text-sidebar-foreground/60 transition-colors hover:bg-sidebar-foreground/10 hover:text-sidebar-foreground"
               title="Sign out"
             >
