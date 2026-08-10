@@ -140,15 +140,17 @@ export function AppShell({
   return (
     <div className={cn("flex h-screen overflow-hidden", className)}>
       {/* Sidebar */}
-      <aside className="flex w-[220px] shrink-0 flex-col gap-5 bg-sidebar p-5 text-sidebar-foreground">
+      <aside className="flex w-64 shrink-0 flex-col gap-5 bg-sidebar p-5 text-sidebar-foreground">
         {/* Logo + app name */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col items-center gap-2 border-b border-sidebar-foreground/10 pb-5 text-center">
           {logo ?? (
-            <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-md bg-secondary text-xs font-bold text-primary">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-secondary text-sm font-bold text-primary">
               SH
             </div>
           )}
-          <span className="text-sm font-bold text-sidebar-foreground">{appName}</span>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-sidebar-foreground/70">
+            {appName}
+          </span>
         </div>
 
         {toolsHomeUrl && (

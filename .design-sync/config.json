@@ -2,7 +2,7 @@
   "pkg": "@sjhamill/ui",
   "globalName": "SjhamillUi",
   "shape": "package",
-  "projectId": "f9da4448-b3c3-402b-be07-416f1be209ab",
+  "projectId": "856cfbca-03de-4bc2-85c9-5412a81da520",
   "srcDir": "src",
   "tsconfig": "tsconfig.json",
   "cssEntry": ".ds-sync/compiled.css",
