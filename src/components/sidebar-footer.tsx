@@ -107,7 +107,10 @@ export function SidebarFooter({
         </div>
       </div>
 
-      <div className="break-words text-[11px] leading-snug text-sidebar-foreground/50" title={userEmail}>
+      <div
+        className="break-words text-[11px] leading-snug text-sidebar-foreground/50"
+        title={userEmail}
+      >
         {userEmail}
       </div>
     </div>
