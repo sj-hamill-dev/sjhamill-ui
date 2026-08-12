@@ -61,16 +61,20 @@ ds-bundle/                       (gitignored) 21-component IIFE bundle output fo
 
 ---
 
-## Consumer inventory (verified 2026-08-03)
+## Consumer inventory (verified 2026-08-12)
 
-| Consumer repo | package.json dep | Actual imports | Sync workflow? |
-|---|---|---|---|
-| `procore-direct-costs-app` | `github:sj-hamill-dev/sjhamill-ui#main` | `@sjhamill/ui/tailwind-preset` | Yes — `.github/workflows/sync-sjhamill-ui.yml` (6h cron) |
-| `procore-direct-costs-embed-app` | `git+https://github.com/sj-hamill-dev/sjhamill-ui.git#main` | `@sjhamill/ui/tailwind-preset` + `@sjhamill/ui/styles/globals.css` | Yes — same 6h cron |
-| `procore-commitments-app` | `github:sj-hamill-dev/sjhamill-ui#main` | `@sjhamill/ui/tailwind-preset` + components (`Button`, `Card` family, `Badge`, `KpiCard`, `Logo`, `DarkModeToggle`) + hook (`useDarkMode`) + utils (`cn`, `formatCurrency`, `formatDateShort`, `formatPercent`) via `@sjhamill/ui/lib/utils` | Yes — same 6h cron |
-| `vendor-analytics-app` | `github:sj-hamill-dev/sjhamill-ui#main` | `@sjhamill/ui/tailwind-preset` | **No** — needs sync workflow (tracked as follow-up issue) |
+Every consumer pins `@sjhamill/ui` to an **exact commit SHA** and runs
+`.github/workflows/sync-sjhamill-ui.yml` on a 6h cron that opens a bump PR.
 
-**Takeaway:** four apps depend on the preset. `procore-commitments-app` is the first (and currently only) real consumer of components + hooks + utilities — so renaming anything on the export surface breaks it. The other three apps only consume the preset (plus `globals.css` for the embed app). Any breaking change to a component/util/hook needs a grep across `procore-commitments-app/src` before merging.
+| Consumer repo | package.json dep | Actual imports |
+|---|---|---|
+| `procore-direct-costs-app` | `github:…/sjhamill-ui#<sha>` | `@sjhamill/ui/tailwind-preset` |
+| `procore-direct-costs-embed-app` | `git+https://…/sjhamill-ui.git#<sha>` | `@sjhamill/ui/tailwind-preset` + `@sjhamill/ui/styles/globals.css` |
+| `procore-commitments-app` | `github:…/sjhamill-ui#<sha>` | `@sjhamill/ui/tailwind-preset` + components (`Button`, `Card` family, `Badge`, `KpiCard`, `Logo`, `DarkModeToggle`) + hook (`useDarkMode`) + utils (`cn`, `formatCurrency`, `formatDateShort`, `formatPercent`) via `@sjhamill/ui/lib/utils` |
+| `vendor-analytics-app` | `github:…/sjhamill-ui#<sha>` | `@sjhamill/ui/tailwind-preset` |
+| `sjhamill-tools-homepage` | `github:…/sjhamill-ui#<sha>` | `@sjhamill/ui/tailwind-preset` |
+
+**Takeaway:** five apps depend on the preset. `procore-commitments-app` is the first (and currently only) real consumer of components + hooks + utilities — so renaming anything on the export surface breaks it. The other four apps only consume the preset (plus `globals.css` for the embed app). Any breaking change to a component/util/hook needs a grep across `procore-commitments-app/src` before merging.
 
 ---
 
@@ -79,33 +83,38 @@ ds-bundle/                       (gitignored) 21-component IIFE bundle output fo
 `@sjhamill/ui` is a **git-URL npm dependency**, not a published package. Consumers install it directly from GitHub:
 
 ```jsonc
-// consumer package.json
+// consumer package.json — pinned to an exact commit, never a branch
 "dependencies": {
-  "@sjhamill/ui": "github:sj-hamill-dev/sjhamill-ui#main"
+  "@sjhamill/ui": "github:sj-hamill-dev/sjhamill-ui#3392d293f950ba46d9f944de5fe4dbf754f42d4f"
 }
 ```
 
 **Consequences worth internalizing:**
 
 1. **No dist emission.** The consumer's bundler (Vite) reads `./src/index.ts` directly. `package.json.main` and `package.json.types` both point at `./src/index.ts`. Adding a build step would require every consumer to change `main`/`types`.
-2. **Every merge to `main` ships.** There is no release gate. Any consumer whose sync workflow runs next will pick up the new commit within 6 hours.
+2. **Merging to `main` proposes a ship, it doesn't ship.** Within 6 hours each consumer's sync job opens a PR moving its pin to the new SHA. Nothing reaches production until a human merges that PR.
 3. **`peerDependencies` are load-bearing.** `react`, `react-dom`, `tailwindcss` come from the consumer. Do not move them into `dependencies` — that will duplicate React and break hooks.
 4. **`files` in `package.json` gates what the git dep ships.** Currently: `src`, `tailwind-preset.js`, `README.md`. If you add a new top-level asset consumers need (say, `postcss-preset.js`), you must add it to `files` or the git dep won't include it.
 
 ## How consumers refresh
 
 Each consumer repo has a `.github/workflows/sync-sjhamill-ui.yml` on a 6h cron that:
-1. Runs `npm update @sjhamill/ui` (re-resolves `#main` to the latest commit SHA).
-2. Opens a PR with the updated `package-lock.json`.
-3. On merge, Cloudflare Pages rebuilds the consumer with the new shared code.
+1. Resolves `refs/heads/main` on this repo to a SHA; exits if the consumer is already pinned there.
+2. Repins `package.json` + `package-lock.json` to that SHA and runs `npm run build`.
+3. If the build passes, pushes `chore/sync-sjhamill-ui-<short-sha>` and opens a PR. If it fails, no PR — someone has to look at the failed run.
+4. On merge, Cloudflare Pages rebuilds the consumer with the new shared code.
 
-**Manual bump when needed:** `npm update @sjhamill/ui` in the consumer, commit `package-lock.json`, push.
+The build step only catches type and compile breaks. **A visual regression compiles fine** — reviewing the rendered app before merging the sync PR is the only thing that catches it.
+
+Two things worth knowing about the sync PRs: re-running the job while one is open force-pushes the branch and reuses the PR, and because they're created with `GITHUB_TOKEN` they don't trigger the consumer's other workflows, so they show no checks (the build ran in the sync job itself).
+
+**Manual bump when needed:** `npm install --save "github:sj-hamill-dev/sjhamill-ui#<sha>"` in the consumer, commit both `package.json` and `package-lock.json`, open a PR.
 
 ## Version / release policy
 
 - Pre-1.0. `package.json.version` is bumped occasionally but is not enforced.
-- Consumers pin to `#main` today. Pinning to a tag (`#v0.2.0`) is documented in the README but not currently practiced.
-- Any commit landing on `main` is de-facto a release. If a change is risky, coordinate with consumer maintainers before merging.
+- Consumers pin to an exact commit SHA. Never spec a branch — `#main` is how an unreviewed regression reaches all five apps on a timer (see [#15](https://github.com/sj-hamill-dev/sjhamill-ui/issues/15)).
+- A commit landing on `main` is a *proposed* release: it shows up as a bump PR in each consumer within 6 hours and ships when that PR is merged.
 - Once we hit 1.0, breaking changes will bump minor (0.x era) or major (1.x+), and consumers will pin to tags.
 
 ---
@@ -117,7 +126,7 @@ Each consumer repo has a `.github/workflows/sync-sjhamill-ui.yml` on a 6h cron t
 3. **Dark mode is `class="dark"` on a parent element** (usually `<html>`). It's NOT React context. Components read CSS custom properties, not props. The `useDarkMode` hook writes the class; components stay context-free.
 4. **`cn()` is the only sanctioned className composer** (`clsx` + `tailwind-merge`). Direct string concatenation loses `tailwind-merge`'s conflict resolution.
 5. **Radix Slot is a peer of `Button`** via the `asChild` polymorphic pattern. Removing `@radix-ui/react-slot` from `dependencies` would silently break every consumer using `<Button asChild>`.
-6. **Every commit to `main` = deploy.** There is no release gate. The sync workflow in each consumer resolves `#main` to the latest SHA within 6 hours. Land breaking changes on a branch and coordinate before merging.
+6. **Every commit to `main` = a bump PR in all five consumers within 6 hours.** The gate is thin: the sync job runs `npm run build` and a human merges. That catches compile breaks and, if the reviewer actually opens the app, visual ones. Land breaking changes on a branch and coordinate before merging.
 7. **`formatCompactCurrency` is a deprecated alias of `formatCurrency`** kept only so existing call sites don't break. Do not use in new code.
 
 ---

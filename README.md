@@ -23,26 +23,22 @@ The load-bearing surfaces today are the **Tailwind preset** (all 4 apps), **`glo
 
 ## Install in a consumer app
 
-Not published to npm. Consume directly via git URL:
+Not published to npm. Consume directly via git URL, pinned to an exact commit:
 
 ```jsonc
 // consumer package.json
 {
   "dependencies": {
-    "@sjhamill/ui": "github:sj-hamill-dev/sjhamill-ui#main"
+    "@sjhamill/ui": "github:sj-hamill-dev/sjhamill-ui#3392d293f950ba46d9f944de5fe4dbf754f42d4f"
   }
 }
 ```
 
-Every consumer has a `.github/workflows/sync-sjhamill-ui.yml` (6h cron) that runs `npm update @sjhamill/ui` and opens a bump PR. Merging that PR triggers a Cloudflare Pages rebuild.
+> **Never spec a branch.** `#main` makes the dependency a moving target: anything landing here reaches production in every consumer on the next cron tick, unreviewed. A git tag (`#v0.2.0`) is fine too — a branch is not.
 
-> **Exception:** `vendor-analytics-app` does not have a sync workflow yet — tracked as a follow-up.
+Every consumer has a `.github/workflows/sync-sjhamill-ui.yml` (6h cron) that resolves the latest commit on this repo's `main`, repins to it, runs `npm run build`, and — only if the build passes — opens a bump PR. Merging that PR triggers a Cloudflare Pages rebuild.
 
-For production pins, use a git tag instead of `#main`:
-
-```jsonc
-"@sjhamill/ui": "git+https://github.com/sj-hamill-dev/sjhamill-ui.git#v0.2.0"
-```
+The build step catches type and compile breaks only. **Open the app and look at it before merging a sync PR** — a visual regression compiles perfectly and the review is the only place it gets caught.
 
 ## Wire it up
 
