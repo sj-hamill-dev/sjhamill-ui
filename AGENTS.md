@@ -22,7 +22,7 @@ Non-Copilot agent entry point (Claude Code, Cursor, Aider, Codex). Same behavior
    - `.design-sync/` — cross-Claude-account collaboration config. Owned by the design-sync workflow.
    - `.specstory/` — deprecated session transcripts. Never read, list, or reference. Burns tokens for zero value.
    - `.github/workflows/*.yml` — coordinate CI changes.
-7. **No published npm package.** Consumers install via `git+https://…sjhamill-ui.git#main`. Never suggest `npm publish` or GitHub Packages workflows.
+7. **No published npm package.** Consumers install via `git+https://…sjhamill-ui.git#<commit-sha>` — pinned to an exact commit, never a branch. Their 6h sync job opens a bump PR rather than pushing. Never suggest `npm publish` or GitHub Packages workflows.
 8. **`peerDependencies` (`react`, `react-dom`, `tailwindcss`) stay peer.** Moving them to `dependencies` duplicates React in the consumer and breaks hooks.
 
 ## Issue filing

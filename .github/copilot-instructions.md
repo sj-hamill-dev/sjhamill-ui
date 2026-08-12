@@ -15,7 +15,7 @@
    - `.design-sync/` (cross-agent collaboration config)
    - `.specstory/` — deprecated. Never read, list, or reference files inside.
    - `.github/workflows/*.yml`
-6. **No npm publish.** Distribution is `git+https://…sjhamill-ui.git#main`.
+6. **No npm publish.** Distribution is `git+https://…sjhamill-ui.git#<commit-sha>` — consumers pin an exact commit, never a branch.
 7. **Peer deps stay peer** (`react`, `react-dom`, `tailwindcss`). Moving them into `dependencies` duplicates React in the consumer.
 8. **Styling is Tailwind utilities only.** No raw CSS or inline `style={}` for layout/spacing/color. Compose dynamic classes with `cn()`.
 
