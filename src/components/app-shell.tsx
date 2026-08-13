@@ -115,7 +115,11 @@ export interface AppShellProps {
   linkComponent?: React.ComponentType<SidebarNavLinkProps>;
   /**
    * Custom logo rendered above the app name in the sidebar header. When
-   * omitted, a default "SH" monogram renders as a fallback.
+   * omitted, the white SJ Hamill mark renders.
+   *
+   * The sidebar is dark in BOTH themes, so whatever you pass here must read
+   * on navy. Do NOT key this to the page theme — see the comment at the
+   * render site.
    */
   logo?: React.ReactNode;
   /** Main page content. */
@@ -128,6 +132,10 @@ export interface AppShellProps {
  * The sidebar renders the SJ Hamill logo, an app name, a `SidebarNav`, and
  * an optional footer slot. Each consumer app passes its own navItems and
  * content; the chrome stays identical across apps.
+ *
+ * Below the `md` breakpoint the sidebar collapses into a top bar with a
+ * hamburger that opens the same sidebar as an overlay drawer. Desktop
+ * rendering is unchanged.
  */
 export function AppShell({
   appName,
@@ -139,41 +147,148 @@ export function AppShell({
   children,
   className,
 }: AppShellProps) {
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
+
+  // Escape closes the drawer. Only bound while it's open.
+  React.useEffect(() => {
+    if (!drawerOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setDrawerOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [drawerOpen]);
+
+  // Always the white mark: the sidebar is dark in BOTH themes (--sidebar is
+  // brand navy in light, slate ink in dark), so keying this to the page theme
+  // painted the dark-ink logo onto navy and it vanished in light mode.
+  const logoNode = logo ?? <Logo dark className="h-10 w-auto max-w-full object-contain" />;
+
+  // Shared by the desktop aside and the mobile drawer so the two can't drift.
+  const sidebarContent = (
+    <>
+      {/* Logo + app name */}
+      <div className="flex flex-col items-center gap-2 border-b border-sidebar-foreground/10 pb-5 text-center">
+        {logoNode}
+        <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-sidebar-foreground/70">
+          {appName}
+        </span>
+      </div>
+
+      {toolsHomeUrl && (
+        <a
+          href={toolsHomeUrl}
+          className="flex items-center gap-1.5 text-xs text-sidebar-foreground/60 transition-colors hover:text-sidebar-foreground"
+        >
+          <span aria-hidden>←</span>
+          <span>Back to Tools</span>
+        </a>
+      )}
+
+      <SidebarNav items={navItems} linkComponent={linkComponent} />
+
+      {sidebarFooter && (
+        <div className="mt-auto text-xs text-sidebar-foreground/50">{sidebarFooter}</div>
+      )}
+    </>
+  );
+
   return (
     <div className={cn("flex h-screen overflow-hidden", className)}>
-      {/* Sidebar */}
-      <aside className="flex w-64 shrink-0 flex-col gap-5 bg-sidebar p-5 text-sidebar-foreground">
-        {/* Logo + app name */}
-        <div className="flex flex-col items-center gap-2 border-b border-sidebar-foreground/10 pb-5 text-center">
-          {/* Always the white mark: the sidebar is dark in BOTH themes
-              (--sidebar is brand navy in light, slate ink in dark), so keying
-              this to the page theme painted the dark-ink logo onto navy and it
-              vanished in light mode. */}
-          {logo ?? <Logo dark className="h-10 w-auto max-w-full object-contain" />}
-          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-sidebar-foreground/70">
-            {appName}
-          </span>
-        </div>
-
-        {toolsHomeUrl && (
-          <a
-            href={toolsHomeUrl}
-            className="flex items-center gap-1.5 text-xs text-sidebar-foreground/60 transition-colors hover:text-sidebar-foreground"
-          >
-            <span aria-hidden>←</span>
-            <span>Back to Tools</span>
-          </a>
-        )}
-
-        <SidebarNav items={navItems} linkComponent={linkComponent} />
-
-        {sidebarFooter && (
-          <div className="mt-auto text-xs text-sidebar-foreground/50">{sidebarFooter}</div>
-        )}
+      {/* Desktop sidebar */}
+      <aside className="hidden w-64 shrink-0 flex-col gap-5 overflow-y-auto bg-sidebar p-5 text-sidebar-foreground md:flex">
+        {sidebarContent}
       </aside>
 
-      {/* Main content */}
-      <main className="flex-1 overflow-y-auto bg-background">{children}</main>
+      {/* Mobile drawer */}
+      {drawerOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div
+            aria-hidden
+            onClick={() => setDrawerOpen(false)}
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+          />
+          <aside
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${appName} navigation`}
+            className="absolute inset-y-0 left-0 flex w-64 flex-col gap-5 overflow-y-auto bg-sidebar p-5 text-sidebar-foreground shadow-xl"
+          >
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setDrawerOpen(false)}
+                aria-label="Close menu"
+                className="rounded-md p-1.5 text-sidebar-foreground hover:bg-sidebar-foreground/10"
+              >
+                <CloseIcon />
+              </button>
+            </div>
+            {/* Any nav activation dismisses the drawer. Capture on the wrapper
+                rather than threading an onClick through SidebarNavLinkProps —
+                consumers pass their own router Link and can't be relied on to
+                forward it. */}
+            <div
+              className="contents"
+              onClick={(e) => {
+                if ((e.target as HTMLElement).closest("a")) setDrawerOpen(false);
+              }}
+            >
+              {sidebarContent}
+            </div>
+          </aside>
+        </div>
+      )}
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        {/* Mobile top bar */}
+        <div className="flex h-14 shrink-0 items-center gap-3 border-b border-sidebar-foreground/10 bg-sidebar px-4 text-sidebar-foreground md:hidden">
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(true)}
+            aria-label="Open menu"
+            aria-expanded={drawerOpen}
+            className="inline-flex items-center justify-center rounded-md border border-sidebar-foreground/20 bg-sidebar-foreground/5 p-1.5 text-sidebar-foreground hover:bg-sidebar-foreground/10"
+          >
+            <MenuIcon />
+          </button>
+          <span className="flex h-7 items-center [&_img]:h-7 [&_img]:w-auto">{logoNode}</span>
+        </div>
+
+        <main className="flex-1 overflow-y-auto bg-background">{children}</main>
+      </div>
     </div>
+  );
+}
+
+function MenuIcon() {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      className="h-5 w-5"
+    >
+      <path d="M3 6h18M3 12h18M3 18h18" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      className="h-5 w-5"
+    >
+      <path d="M18 6 6 18M6 6l12 12" />
+    </svg>
   );
 }
