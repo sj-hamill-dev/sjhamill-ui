@@ -6,7 +6,8 @@ import { RoleBadge, type Role } from "./role-badge";
 export interface ViewAsTarget {
   id: string;
   name: string;
-  email: string;
+  /** Omitted for role targets, which stand for a role rather than a person. */
+  email?: string;
   role: Role;
   /** 1–2 character avatar initials. */
   initials: string;
@@ -136,8 +137,7 @@ function TargetRow({ target, isActive, isSelf, onSelect }: TargetRowProps) {
           <div className="mt-0.5 flex items-center gap-1.5">
             <RoleBadge role={target.role} />
             <span className="text-xs text-muted-foreground">
-              {target.email}
-              {target.hint ? ` · ${target.hint}` : ""}
+              {[target.email, target.hint].filter(Boolean).join(" · ")}
             </span>
           </div>
         )}
