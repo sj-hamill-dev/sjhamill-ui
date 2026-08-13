@@ -102,7 +102,8 @@ export interface AppShellProps {
   navItems: NavItem[];
   /** Content rendered below the nav in the sidebar (e.g. user email, dark mode toggle). */
   sidebarFooter?: React.ReactNode;
-  /** Whether the user's dark mode preference is active — controls the Logo variant. */
+  /** Accepted for API compatibility and currently unused: the sidebar is dark
+   * in both themes, so its logo does not vary with the theme. */
   dark?: boolean;
   /**
    * Renders a "← Back to Tools" link above the nav pointing to this URL.
@@ -135,7 +136,6 @@ export function AppShell({
   sidebarFooter,
   toolsHomeUrl = DEFAULT_TOOLS_HOME_URL,
   logo,
-  dark = false,
   children,
   className,
 }: AppShellProps) {
@@ -145,7 +145,11 @@ export function AppShell({
       <aside className="flex w-64 shrink-0 flex-col gap-5 bg-sidebar p-5 text-sidebar-foreground">
         {/* Logo + app name */}
         <div className="flex flex-col items-center gap-2 border-b border-sidebar-foreground/10 pb-5 text-center">
-          {logo ?? <Logo dark={dark} className="h-10 w-auto max-w-full object-contain" />}
+          {/* Always the white mark: the sidebar is dark in BOTH themes
+              (--sidebar is brand navy in light, slate ink in dark), so keying
+              this to the page theme painted the dark-ink logo onto navy and it
+              vanished in light mode. */}
+          {logo ?? <Logo dark className="h-10 w-auto max-w-full object-contain" />}
           <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-sidebar-foreground/70">
             {appName}
           </span>
