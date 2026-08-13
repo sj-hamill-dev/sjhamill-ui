@@ -13,10 +13,31 @@ export interface TeamMember {
   initials: string;
   /** Optional avatar background color. Defaults to a deterministic pick from TABLEAU_10. */
   avatarColor?: string;
-  /** Freeform label for the projects column, e.g. "All (17)" or "4 assigned". */
+  /** Freeform label for the projects column. Overrides the derived label. */
   projectsLabel?: string;
+  /**
+   * Project scope, straight off core.dim_user_access. Supply these and the
+   * projects column labels itself -- every backend already returns them, and
+   * no app was mapping them into projectsLabel, so the column read "—" for
+   * everyone including admins who can see everything.
+   */
+  scope_mode?: "all" | "selected" | null;
+  /** Assigned project count. Meaningless when scope_mode is "all". */
+  project_count?: number | null;
   /** Freeform label for the last-active column, e.g. "2 min ago". */
   lastActive?: string;
+}
+
+/** "All projects" for unrestricted scope, else the assigned count. */
+function projectsLabel(m: TeamMember): string {
+  if (m.projectsLabel) return m.projectsLabel;
+  if (m.scope_mode === "all") return "All projects";
+  if (m.scope_mode === "selected") {
+    const n = m.project_count ?? 0;
+    // 0 is worth stating plainly: that person signs in and sees nothing.
+    return n === 1 ? "1 project" : `${n} projects`;
+  }
+  return "—";
 }
 
 export interface TeamRolesTableProps {
@@ -72,7 +93,7 @@ export function TeamRolesTable({
       key: "projects",
       header: "Projects",
       width: "w-[140px]",
-      cell: (m) => <span className="text-sm text-foreground">{m.projectsLabel ?? "—"}</span>,
+      cell: (m) => <span className="text-sm text-foreground">{projectsLabel(m)}</span>,
     },
     {
       key: "lastActive",
