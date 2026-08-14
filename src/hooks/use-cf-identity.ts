@@ -30,10 +30,14 @@ export function useCfIdentity(): CfIdentity | null {
         if (!res.ok) throw new Error(`${res.status}`);
         return res.json();
       })
-      .then((data: { email?: string; name?: string }) => {
+      .then((data: unknown) => {
         if (!cancelled) {
-          const email: string = data.email ?? "unknown";
-          setIdentity({ email, name: data.name, initials: initialsFrom(email) });
+          const { email: rawEmail, name } = data as {
+            email?: string;
+            name?: string;
+          };
+          const email: string = rawEmail ?? "unknown";
+          setIdentity({ email, name, initials: initialsFrom(email) });
         }
       })
       .catch(() => {
